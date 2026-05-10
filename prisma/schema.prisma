@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ─── MODELS ───────────────────────────────────────────────────────
+
+model User {
+  id               String         @id @default(uuid())
+  fullName         String
+  email            String         @unique
+  password         String
+  studentId        String?        @unique
+  role             Role           @default(STUDENT)
+  isVerified       Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  subscription     Subscription?
+  payments         Payment[]
+  refreshTokens    RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model School {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses     Course[]
+
+  @@map("schools")
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique
+  description String?
+  schoolId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  papers      Paper[]
+
+  @@map("courses")
+}
+
+model Paper {
+  id           String   @id @default(uuid())
+  title        String
+  courseId     String
+  courseCode   String
+  year         Int
+  semester     String
+  fileUrl      String
+  filePublicId String
+  uploadedById String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseCode])
+  @@index([year])
+  @@index([courseId])
+  @@map("papers")
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  userId    String             @unique
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime           @default(now())
+  endDate   DateTime
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  userId            String
+  amount             Decimal      @db.Decimal(10, 2)
+  currency          String        @default("KES")
+  status            PaymentStatus @default(PENDING)
+  mpesaReceiptNumber String?      @unique
+  mpesaPhoneNumber  String
+  checkoutRequestId String?       @unique
+  merchantRequestId String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}

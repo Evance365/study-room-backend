@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER push these
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/migrations/migration_lock.toml
+
+# Temp files
+*.tmp
+setup.js
+fix.js
+fix2.js
+fix3.js
+fix4.js
+fixindex.js
+seed.js
