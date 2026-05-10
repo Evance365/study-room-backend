@@ -1,13 +1,10 @@
-# Dependencies
+# Dependencies — never push
 node_modules/
 
-# Environment variables — NEVER push these
+# Environment variables
 .env
 .env.*
 !.env.example
-
-# Build output
-
 
 # Logs
 *.log
@@ -17,11 +14,7 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Prisma
-prisma/migrations/migration_lock.toml
-
 # Temp files
-*.tmp
 setup.js
 fix.js
 fix2.js
