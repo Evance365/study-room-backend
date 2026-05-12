@@ -6,7 +6,11 @@ export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
 
-export const authenticate = (req, _res, next) => {
+export const authenticate = (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+): void => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -16,14 +20,22 @@ export const authenticate = (req, _res, next) => {
     const decoded = verifyAccessToken(token);
     req.user = decoded;
     next();
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const authorizeAdmin = (req, _res, next) => {
+export const authorizeAdmin = (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+): void => {
   try {
-    if (req.user && req.user.role !== 'ADMIN') {
+    if (req.user?.role !== 'ADMIN') {
       throw new AppError('Access denied. Admins only.', 403);
     }
     next();
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 };
