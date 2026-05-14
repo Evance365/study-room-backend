@@ -21,7 +21,7 @@ const authenticate = (req, _res, next) => {
 exports.authenticate = authenticate;
 const authorizeAdmin = (req, _res, next) => {
     try {
-        if (req.user && req.user.role !== 'ADMIN') {
+        if (req.user?.role !== 'ADMIN') {
             throw new appError_1.AppError('Access denied. Admins only.', 403);
         }
         next();

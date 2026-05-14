@@ -9,7 +9,7 @@ const appError_1 = require("./appError");
 const getEnvVar = (key) => {
     const value = process.env[key];
     if (!value)
-        throw new Error('Missing environment variable: ' + key);
+        throw new Error(`Missing environment variable: ${key}`);
     return value;
 };
 const generateAccessToken = (payload) => {

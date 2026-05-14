@@ -29,8 +29,9 @@ const appError_1 = require("../utils/appError");
 const register = async (req, res, next) => {
     try {
         const { fullName, email, password, studentId } = req.body;
-        if (!fullName || !email || !password)
+        if (!fullName || !email || !password) {
             throw new appError_1.AppError('fullName, email and password are required', 400);
+        }
         const user = await authService.registerUser({ fullName, email, password, studentId });
         res.status(201).json({ success: true, message: 'Account created successfully', data: user });
     }
@@ -42,8 +43,9 @@ exports.register = register;
 const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password)
+        if (!email || !password) {
             throw new appError_1.AppError('Email and password are required', 400);
+        }
         const result = await authService.loginUser({ email, password });
         res.status(200).json({ success: true, message: 'Login successful', data: result });
     }
@@ -55,8 +57,9 @@ exports.login = login;
 const refresh = async (req, res, next) => {
     try {
         const { refreshToken } = req.body;
-        if (!refreshToken)
+        if (!refreshToken) {
             throw new appError_1.AppError('Refresh token is required', 400);
+        }
         const result = await authService.refreshAccessToken(refreshToken);
         res.status(200).json({ success: true, message: 'Token refreshed', data: result });
     }
@@ -68,8 +71,9 @@ exports.refresh = refresh;
 const logout = async (req, res, next) => {
     try {
         const { refreshToken } = req.body;
-        if (!refreshToken)
+        if (!refreshToken) {
             throw new appError_1.AppError('Refresh token is required', 400);
+        }
         await authService.logoutUser(refreshToken);
         res.status(200).json({ success: true, message: 'Logged out successfully' });
     }
