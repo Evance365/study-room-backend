@@ -15,9 +15,22 @@ import schoolRoutes from './routes/school.routes';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173',
+  process.env.CLIENT_URL,
+].filter(Boolean) as string[];
+
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(morgan('dev'));
@@ -32,12 +45,12 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/papers', paperRoutes);
 app.use('/api/schools', schoolRoutes);
-app.use('/api/courses', schoolRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log('Server running on http://localhost:' + PORT);
 });
 
 export default app;
